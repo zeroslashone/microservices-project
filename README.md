@@ -1,4 +1,4 @@
-###Udacity Refactoring Monolith to Microservices
+#Udacity Refactoring Monolith to Microservices
 Steps:
 1. Run `npm i` in udacity-c3-frontend, udacity-c3-restapi-feed and udacity-c3-restapi-user
 2.Head over to udacity-c3-deployment/docker and run:
