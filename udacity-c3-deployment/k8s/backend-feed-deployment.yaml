@@ -1,11 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     service: backend-feed
   name: backend-feed
 spec:
-  replicas: 1
+  replicas: 2
+  selector:
+    matchLabels:
+      service: backend-feed
   template:
     metadata:
       labels:
@@ -14,25 +17,25 @@ spec:
       containers:
       - image: pol905/udacity-restapi-feed
         name: backend-feed
-        imagePullPolicy: Always
+        imagePullPolicy: Always  
         resources:
           requests:
             memory: "64Mi"
             cpu: "250m"
           limits:
             memory: "1024Mi"
-            cpu: "500m"
+            cpu: "500m"                  
         env:
         - name: URL
           valueFrom:
             configMapKeyRef:
               name: env-config
               key: URL
-        - name: AWS_MEDIA_BUCKET
+        - name: AWS_BUCKET
           valueFrom:
             configMapKeyRef:
               name: env-config
-              key: AWS_MEDIA_BUCKET
+              key: AWS_BUCKET
         - name: AWS_PROFILE
           valueFrom:
             configMapKeyRef:
@@ -48,11 +51,11 @@ spec:
             configMapKeyRef:
               name: env-config
               key: JWT_SECRET
-        - name: POSTGRESS_DATABASE
+        - name: POSTGRESS_DB
           valueFrom:
             configMapKeyRef:
               name: env-config
-              key: POSTGRESS_DATABASE
+              key: POSTGRESS_DB
         - name: POSTGRESS_HOST
           valueFrom:
             configMapKeyRef:
@@ -60,28 +63,18 @@ spec:
               key: POSTGRESS_HOST
         - name: POSTGRESS_PASSWORD
           valueFrom:
-            configMapKeyRef:
-              name: env-config
+            secretKeyRef:
+              name: env-secret
               key: POSTGRESS_PASSWORD
         - name: POSTGRESS_USERNAME
           valueFrom:
-            configMapKeyRef:
-              name: env-config
-              key: POSTGRESS_USERNAME
-        # - name: POSTGRESS_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: env-secret
-        #       key: POSTGRESS_PASSWORD
-        # - name: POSTGRESS_USERNAME
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: env-secret
-        #       key: POSTGRESS_USERNAME
+            secretKeyRef:
+              name: env-secret
+              key: POSTGRESS_USERNAME      
         volumeMounts:
         - name: aws-secret
-          mountPath: "~/.aws/"
-          readOnly: true
+          mountPath: "/root/.aws/"
+          readOnly: true        
       restartPolicy: Always
       volumes:
       - name: aws-secret
